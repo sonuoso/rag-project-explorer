@@ -2,7 +2,7 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { ChromaClient } from "chromadb";
 import type { ChunkWithMetadata } from "./ingest";
 
-const collectionName = "project-explorer";
+export const collectionName = "project-explorer";
 
 // creating an instance of the OpenAIEmbeddings class
 const embedding = new OpenAIEmbeddings({
@@ -54,6 +54,6 @@ export async function embedAndStore(chunks: ChunkWithMetadata[]): Promise<void> 
 export async function embedQuery(query: string): Promise<number[]> {
     // embedQuery takes a single query string and returns a single vector (an array of numbers)
     const queryVector = await embedding.embedQuery(query);
-    
+
     return queryVector;
 }
