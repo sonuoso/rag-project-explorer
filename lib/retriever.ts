@@ -18,6 +18,7 @@ export async function retrieve(question: string): Promise<string> {
         ssl: false
     })
 
+    // getCollection (not getOrCreateCollection) - only query on existing data and not create a collection if not available
     const collection = await chromaClient.getCollection({
         name: collectionName
     })
@@ -25,8 +26,7 @@ export async function retrieve(question: string): Promise<string> {
     // embedQuery returns a single vector
     const queryVector = await embedQuery(question);
 
-    // querying on the collection and queryEmbeddings expects an array of vectors
-    // since queryVector is a single vector it's wrapped with []
+    // queryEmbeddings expects an array of vectors and since queryVector is a single vector it's wrapped with []
     const results = await collection.query({
         queryEmbeddings: [queryVector],
         nResults: k
@@ -43,7 +43,7 @@ export async function retrieve(question: string): Promise<string> {
         return `[File: ${fPath}]\n${doc}`;
     }).join("\n\n") // joins all arrays as a single string with an empty line between each formatted chunk
 
-    // chat.invoke takes system prompt and user's question and returns naturally formatted response
+    // chat.invoke takes system prompt and user's question and returns a naturally formatted response
     const response = await chat.invoke([
         { role: "system", content: 
             `You are a code assistant. Answer questions about the codebase below. 
