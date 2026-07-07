@@ -11,7 +11,16 @@ const chat = new ChatOpenAI({
 
 const k = 5; // number of top chunks to retrieve from collection query
 
-export async function retrieve(question: string): Promise<string> {
+interface AnswerAndSource {
+    content: string;
+    sources: {
+        filePath: string;
+        chunkIndex: number;
+        content: string;
+    }[];
+}
+
+export async function retrieve(question: string): Promise<AnswerAndSource> {
     const chromaClient = new ChromaClient({
         host: "localhost",
         port: 8000,
@@ -43,6 +52,13 @@ export async function retrieve(question: string): Promise<string> {
         return `[File: ${fPath}]\n${doc}`;
     }).join("\n\n") // joins all arrays as a single string with an empty line between each formatted chunk
 
+    const sources = results.documents[0].map((doc, i) => ({ 
+            filePath: results.metadatas[0][i]?.filePath as string,
+            chunkIndex: results.metadatas[0][i]?.chunkIndex as number,
+            content: doc as string
+         })
+    )
+    
     // chat.invoke takes system prompt and user's question and returns a naturally formatted response
     const response = await chat.invoke([
         { role: "system", content: 
@@ -54,5 +70,6 @@ export async function retrieve(question: string): Promise<string> {
         { role: "user", content: question }
     ])
 
-    return response.content as string; // response is an AIMessageChunk object. Its content property contains the required response string but has to be typecast to string
+    //return response.content as string; // response is an AIMessageChunk object. Its content property contains the required response string but has to be typecast to string
+    return ({ content: response.content as string, sources: sources });
 }
