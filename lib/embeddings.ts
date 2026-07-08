@@ -40,8 +40,13 @@ export async function embedAndStore(chunks: ChunkWithMetadata[]): Promise<void> 
         language: chunk.language
     }))
 
+    await chromaClient.deleteCollection({ name: collectionName });
+    const newCollection = await chromaClient.getOrCreateCollection({
+        name: collectionName
+    })
+
     // upserting ids, embeddings, documents and metadata into ChromaDB
-    await collection.upsert({
+    await newCollection.upsert({
         ids, // same as ids: ids
         embeddings, // same as embeddings: embeddings
         documents, // same as documents: documents

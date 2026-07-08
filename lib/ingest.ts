@@ -22,6 +22,18 @@ const IGNORED_DIRS = new Set<string>([
     "build"
 ])
 
+const IGNORED_FILES = new Set<string>([
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    ".gitignore",
+    ".eslintrc.json",
+    "package.json",
+    "tsconfig.json",
+    "next.config.ts",
+    ".env.example"
+])
+
 export function walkFiles(dir: string): string[] {
     const results: string[] = [];
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -30,7 +42,7 @@ export function walkFiles(dir: string): string[] {
             results.push(...walkFiles(path.join(dir, entry.name)));
            }
         } else {
-            if (ALLOWED_EXTENSIONS.has(path.extname(entry.name))) {
+            if (ALLOWED_EXTENSIONS.has(path.extname(entry.name)) && !IGNORED_FILES.has(entry.name)) {
                 results.push(path.join(dir, entry.name))
             }
         }
