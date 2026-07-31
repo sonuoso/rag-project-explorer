@@ -1,11 +1,15 @@
 import ChatInterface from "@/components/ChatInterface";
 
 export default function Home() {
-  return (<>
-  <header><h1 className="h-[4.5rem] bg-[#151515] text-xl px-10 py-5">RAG Project Explorer</h1></header>
-  <main className="max-w-4xl w-full mx-auto">
-      <ChatInterface />
-    </main>
-  </>
-  )
+  return (
+    <>
+      <header className="h-[4rem] bg-[#070707] text-xl py-5 px-10 border-b border-neutral-900">
+        RAG Project Explorer
+      </header>
+      <main className="max-w-4xl w-full mx-auto">
+        <ChatInterface />
+      </main>
+      <footer className="h-[2rem]"></footer>
+    </>
+  );
 }
