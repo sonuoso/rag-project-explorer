@@ -35,10 +35,10 @@
 
 .markdown li {
   margin-bottom: 0.5rem;
+  line-height: 1.7;
 }
 
-.markdown code:not(pre, pre code)
- {
+.markdown code:not(pre, pre code) {
   font-family: var(--font-mono);
   font-size: 0.85rem;
   padding: 0.25rem 0.5rem;
@@ -47,8 +47,7 @@
   border-radius: 6px;
 }
 
-.markdown pre
- {
+.markdown pre {
   padding: 0.2rem;
   margin: 1rem 0;
   background: #101010;
@@ -57,20 +56,21 @@
   scrollbar-color: #202020 #101010;
 }
 
-.markdown pre code
- {
+.markdown pre code {
   background: #101010;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #020202;
+    --background: #0e0e0e;
     --foreground: #ededed;
   }
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, #1a3a2a70 0%, transparent 70%),
+    var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

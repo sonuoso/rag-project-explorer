@@ -22,6 +22,7 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   async function handleSubmit() {
     if (!input.trim()) {
@@ -33,6 +34,8 @@ export default function ChatInterface() {
     setLoading(true);
 
     setInput("");
+
+    setIsExpanded(false);
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "2.5rem";
@@ -68,12 +71,12 @@ export default function ChatInterface() {
     >
       {messages.length === 0 && <h1>AI Project</h1>}
       <div
-        className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-[#020202] px-2 pt-8 pb-12 gap-2`}
+        className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
       >
         {messages.map((message, index) => (
           <div
             key={index}
-            className={`rounded-xl mb-4 px-4 py-3 ${message.role === "user" ? "max-w-3xl ml-auto bg-[#202020]" : "w-full mr-auto"}`}
+            className={`rounded-xl mb-4 px-4 py-3 ${message.role === "user" ? "max-w-3xl ml-auto bg-[#212121]" : "w-full mr-auto"}`}
           >
             <div className="markdown">
               <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
@@ -97,9 +100,11 @@ export default function ChatInterface() {
         ))}
         {loading && <p className="text-sm text-gray-400">Thinking...</p>}
       </div>
-      <div className="w-full pt-4 bg-[#202020] border border-neutral-700 rounded-xl">
+      <div
+        className={`w-full flex bg-[#1a1a1a] border border-neutral-800 ${messages.length === 0 && !isExpanded ? "py-2 rounded-full" : "pt-4 flex-col rounded-xl"}`}
+      >
         <textarea
-          className="w-full px-4 text-base text-neutral-200 bg-transparent focus:outline-none resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-[#141414]"
+          className={`w-full justify-center ${messages.length === 0 && !isExpanded && "py-2"} px-4 text-base text-neutral-200 bg-transparent focus:outline-none resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent`}
           placeholder="Ask a question about the codebase..."
           value={input}
           rows={1}
@@ -108,7 +113,9 @@ export default function ChatInterface() {
           onChange={(e) => {
             setInput(e.target.value);
             e.target.style.height = "auto";
-            e.target.style.height = Math.min(e.target.scrollHeight, 320) + "px";
+            const newHeight = Math.min(e.target.scrollHeight, 320);
+            e.target.style.height = newHeight + "px";
+            setIsExpanded(newHeight > 40); // 2.5rem = 40px
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -117,14 +124,16 @@ export default function ChatInterface() {
             }
           }}
         />
-        <div className="flex pt-2 justify-end">
-          <button
-            className="mb-4 mr-4 px-2 py-2 bg-[#008235] hover:bg-green-600 text-white rounded-lg text-sm"
-            onClick={handleSubmit}
-          >
-            <ArrowRightIcon className="w-4 h-4" />
-          </button>
-        </div>
+        {((messages.length === 0 && input) || messages.length !== 0) && (
+          <div className="flex justify-end">
+            <button
+              className={`${messages.length === 0 && !isExpanded ? "my-1 rounded-full" : "my-4 rounded-lg"} mx-4 px-2 py-2 bg-[#008235] hover:bg-green-600 text-white text-sm`}
+              onClick={handleSubmit}
+            >
+              <ArrowRightIcon className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

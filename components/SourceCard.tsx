@@ -37,7 +37,7 @@ export default function SourceCard({
 
       {expanded && (
         <div className="bg-[#101010] rounded-lg p-2">
-          <pre className="p-2 mt-2 text-xs overflow-auto scrollbar-thin scrollbar-thumb-[#404040] scrollbar-track-[#101010]">
+          <pre className="p-2 mt-2 text-xs overflow-auto scrollbar-thin scrollbar-thumb-[#404040] scrollbar-track-transparent">
             <code>{content}</code>
           </pre>
         </div>
