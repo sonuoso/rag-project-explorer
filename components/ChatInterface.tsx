@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import SourceCard from "./SourceCard";
 import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
@@ -24,6 +24,14 @@ export default function ChatInterface() {
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Chat should auto scroll to the bottom when the loading indicator appears
+  useEffect(() => {
+    if (loading) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [loading]);
 
   async function handleSubmit() {
     if (!input.trim()) {
@@ -70,7 +78,7 @@ export default function ChatInterface() {
     <div
       className={`w-full h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 ? "justify-center items-center" : ""} px-4`}
     >
-      {messages.length === 0 && <h1>AI Project</h1> }
+      {messages.length === 0 && <h1>AI Project</h1>}
       <div
         className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
       >
@@ -99,7 +107,12 @@ export default function ChatInterface() {
             )}
           </div>
         ))}
-        {loading && <div className="mb-4"><RepoceryAnimation size={64} /></div>}
+        {loading && (
+          <div className="mb-4">
+            <RepoceryAnimation size={64} />
+          </div>
+        )}
+        <div ref={bottomRef} />
       </div>
       <div
         className={`w-full flex bg-[#1a1a1a] border border-neutral-800 ${messages.length === 0 && !isExpanded ? "py-2 rounded-full" : "pt-4 flex-col rounded-xl"}`}
