@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import RepoceryAnimation from "./RepoceryAnimation";
 
 interface Message {
   role: "user" | "assistant";
@@ -69,7 +70,7 @@ export default function ChatInterface() {
     <div
       className={`w-full h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 ? "justify-center items-center" : ""} px-4`}
     >
-      {messages.length === 0 && <h1>AI Project</h1>}
+      {messages.length === 0 && <h1>AI Project</h1> }
       <div
         className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
       >
@@ -98,7 +99,7 @@ export default function ChatInterface() {
             )}
           </div>
         ))}
-        {loading && <p className="text-sm text-gray-400">Thinking...</p>}
+        {loading && <div className="mb-4"><RepoceryAnimation size={64} /></div>}
       </div>
       <div
         className={`w-full flex bg-[#1a1a1a] border border-neutral-800 ${messages.length === 0 && !isExpanded ? "py-2 rounded-full" : "pt-4 flex-col rounded-xl"}`}
