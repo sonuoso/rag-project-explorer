@@ -16,6 +16,7 @@
 
 .font-brains {
   font-family: var(--font-brains);
+  font-weight: 200;
 }
 
 .markdown p {
@@ -88,6 +89,14 @@
 @keyframes right-nudge {
   0%, 50%, 100% {transform: translateX(0);}
   25%, 75% {transform: translateX(250px);}
+}
+
+@keyframes blink {
+  50% { color: transparent; }
+}
+
+#Blink {
+  animation: blink 0.4s step-end infinite alternate;
 }
 
 #Needle {

@@ -7,6 +7,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import RepoceryAnimation from "./RepoceryAnimation";
+import TypewriterAnimation from "./TypewriterAnimation";
 
 interface Message {
   role: "user" | "assistant";
@@ -78,7 +79,7 @@ export default function ChatInterface() {
     <div
       className={`w-full h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 ? "justify-center items-center" : ""} px-4`}
     >
-      {messages.length === 0 && <h1>AI Project</h1>}
+      {messages.length === 0 && <div className="self-start"><TypewriterAnimation phrases={["Codebase","Explorer"]} /></div>}
       <div
         className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
       >
@@ -94,7 +95,7 @@ export default function ChatInterface() {
             </div>
             {message.role === "assistant" && (
               <div className="pt-8">
-                <h5 className="font-light">References:</h5>
+                <h5 className="font-light italic">References:</h5>
                 {message.sources?.map((source, i) => (
                   <SourceCard
                     key={i}
@@ -109,7 +110,7 @@ export default function ChatInterface() {
         ))}
         {loading && (
           <div className="mb-4">
-            <RepoceryAnimation size={64} />
+            <RepoceryAnimation size={50} />
           </div>
         )}
         <div ref={bottomRef} />
