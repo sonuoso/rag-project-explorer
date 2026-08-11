@@ -2,7 +2,6 @@ import { OpenAIEmbeddings } from "@langchain/openai";
 import { ChromaClient } from "chromadb";
 import type { ChunkWithMetadata } from "./ingest";
 
-export const collectionName = "project-explorer";
 
 // creating an instance of the OpenAIEmbeddings class
 const embedding = new OpenAIEmbeddings({
@@ -10,7 +9,7 @@ const embedding = new OpenAIEmbeddings({
     openAIApiKey: process.env.OPENAI_API_KEY!
 })
 
-export async function embedAndStore(chunks: ChunkWithMetadata[]): Promise<void> {
+export async function embedAndStore(chunks: ChunkWithMetadata[], collectionName: string): Promise<void> {
 
     // creating a chromaDB instance
     const chromaClient = new ChromaClient({

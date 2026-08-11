@@ -1,6 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { ChromaClient } from "chromadb";
-import { embedQuery, collectionName } from "./embeddings";
+import { embedQuery } from "./embeddings";
 
 // creating a ChatOpenAI instance.
 const chat = new ChatOpenAI({
@@ -20,7 +20,7 @@ interface AnswerAndSource {
     }[];
 }
 
-export async function retrieve(question: string): Promise<AnswerAndSource> {
+export async function retrieve(question: string, collectionName: string): Promise<AnswerAndSource> {
     const chromaClient = new ChromaClient({
         host: "localhost",
         port: 8000,
