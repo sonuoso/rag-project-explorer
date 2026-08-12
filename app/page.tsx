@@ -11,7 +11,7 @@ export default function Home() {
       <main className="max-w-4xl w-full mx-auto">
         <ChatInterface />
       </main>
-      <footer className="h-[2rem]"></footer>
+      <footer className="h-[2rem] text-xs text-neutral-600 text-center">Developed by Abhishek</footer>
     </>
   );
 }

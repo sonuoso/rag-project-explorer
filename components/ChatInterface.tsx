@@ -7,7 +7,7 @@ import rehypeHighlight from "rehype-highlight";
 import "highlight.js/styles/github-dark.css";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import RepoceryAnimation from "./RepoceryAnimation";
-import TypewriterAnimation from "./TypewriterAnimation";
+import Homeface from "./Homeface";
 
 interface Message {
   role: "user" | "assistant";
@@ -77,9 +77,11 @@ export default function ChatInterface() {
 
   return (
     <div
-      className={`w-full h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 ? "justify-center items-center" : ""} px-4`}
+      className={`w-full min-h-[472px] h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 && "justify-center items-center"} overflow-auto p-4`}
     >
-      {messages.length === 0 && <div className="self-start"><TypewriterAnimation phrases={["Codebase","Explorer"]} /></div>}
+      {messages.length === 0 && (
+        <Homeface />
+      )}
       <div
         className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
       >

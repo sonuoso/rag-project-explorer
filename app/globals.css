@@ -16,7 +16,27 @@
 
 .font-brains {
   font-family: var(--font-brains);
+  font-weight: 400;
+}
+
+.font-inter {
+  font-family: var(--font-inter);
+  font-weight: 300;
+}
+
+.font-inter-200 {
+  font-family: var(--font-inter);
   font-weight: 200;
+}
+
+.font-inter-100 {
+  font-family: var(--font-inter);
+  font-weight: 100;
+}
+
+.font-inter-400 {
+  font-family: var(--font-inter);
+  font-weight: 400;
 }
 
 .markdown p {
@@ -69,30 +89,46 @@
   }
 }
 
-.font-inter {
-  font-family: var(--font-inter);
-  font-weight: 300;
-}
-
-
 @keyframes needle-swing {
-  0% {transform: rotate(0deg);}
-  50% {transform: rotate(-180deg);}
-  100% {transform: rotate(0deg);}
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-180deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 @keyframes left-nudge {
-  0%, 50%, 100% {transform: translateX(0);}
-  25%, 75% {transform: translateX(-250px);}
+  0%,
+  50%,
+  100% {
+    transform: translateX(0);
+  }
+  25%,
+  75% {
+    transform: translateX(-250px);
+  }
 }
 
 @keyframes right-nudge {
-  0%, 50%, 100% {transform: translateX(0);}
-  25%, 75% {transform: translateX(250px);}
+  0%,
+  50%,
+  100% {
+    transform: translateX(0);
+  }
+  25%,
+  75% {
+    transform: translateX(250px);
+  }
 }
 
 @keyframes blink {
-  50% { color: transparent; }
+  50% {
+    color: transparent;
+  }
 }
 
 #Blink {
@@ -112,10 +148,17 @@
   animation: right-nudge 1.5s ease-in-out infinite;
 }
 
-body {
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
   background:
     radial-gradient(ellipse 80% 50% at 50% 0%, #1a3a2a70 0%, transparent 70%),
     var(--background);
+  z-index: -1;
+}
+
+body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

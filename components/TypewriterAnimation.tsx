@@ -39,7 +39,7 @@ export default function TypewriterAnimation({ phrases }: TypewriterProps) {
           }
         }
       },
-      isDeleting ? 150 : 200,
+      isDeleting ? 25 : 50,
     );
 
     return () => clearTimeout(timeout);
@@ -47,7 +47,7 @@ export default function TypewriterAnimation({ phrases }: TypewriterProps) {
 
   return (
     <>
-      <span className="font-brains text-2xl text-[#008235]">
+      <span className="font-brains text-lg sm:text-3xl text-[#24CB71]">
         {displayText}
         <span id="Blink" className="font-brains text-neutral-400">
           |
