@@ -11,7 +11,10 @@ const ALLOWED_EXTENSIONS = new Set<string>([
     ".md",
     ".json",
     ".html",
-    ".css"
+    ".css",
+    ".c",
+    ".cpp",
+    ".cs"
 ])
 
 const IGNORED_DIRS = new Set<string>([
