@@ -24,8 +24,10 @@ export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const [isExpanded, setIsExpanded] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [indexing, setIndexing] = useState(false);
+  const [collections, setCollections] = useState<string[]>([]);
+  const [activeCollection, setActiveCollection] = useState<string | null>(null);
 
   // Chat should auto scroll to the bottom when the loading indicator appears
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function ChatInterface() {
   }, [loading]);
 
   async function handleSubmit() {
-    if (!input.trim()) {
+    if (!input.trim() || !activeCollection) {
       return;
     }
 
@@ -45,8 +47,6 @@ export default function ChatInterface() {
 
     setInput("");
 
-    setIsExpanded(false);
-
     if (textareaRef.current) {
       textareaRef.current.style.height = "2.5rem";
     }
@@ -55,7 +55,10 @@ export default function ChatInterface() {
       const res = await fetch("/api/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input }),
+        body: JSON.stringify({
+          question: input,
+          collectionName: activeCollection,
+        }),
       });
 
       const data = await res.json();
@@ -75,83 +78,109 @@ export default function ChatInterface() {
     }
   }
 
+  async function handleIndex(dirPath: string) {
+    const folderName = dirPath.split(/[\\/]/).filter(Boolean).pop();
+    const collectionId = `${folderName}-${Math.random().toString(36).slice(2, 6)}`;
+
+    try {
+      setIndexing(true);
+      const res = await fetch("/api/index", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dirPath, repoName: collectionId }),
+      });
+
+      if (!res.ok) throw new Error("Indexing failed");
+      setActiveCollection(collectionId);
+    } catch (error) {
+      console.error("Indexing failed: ", error);
+    } finally {
+      setIndexing(false);
+    }
+  }
+
   return (
     <div
-      className={`w-full min-h-[472px] h-[calc(100vh-96px)] flex flex-col ${messages.length === 0 && "justify-center items-center"} overflow-auto p-4`}
+      className={`w-full h-[calc(100vh-96px)] flex flex-col ${activeCollection === null && "items-center justify-center"} p-4`}
     >
-      {messages.length === 0 && (
-        <Homeface />
+      {activeCollection === null && (
+        <Homeface onIndex={handleIndex} indexing={indexing} />
       )}
-      <div
-        className={`flex ${messages.length > 0 ? "flex-1" : ""} flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
-      >
-        {messages.map((message, index) => (
+      {activeCollection && (
+        <>
           <div
-            key={index}
-            className={`rounded-xl mb-4 px-4 py-3 ${message.role === "user" ? "max-w-3xl ml-auto bg-[#212121]" : "w-full mr-auto"}`}
+            className={`flex flex-1 flex-col overflow-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent px-2 pt-8 pb-12 gap-2`}
           >
-            <div className="markdown">
-              <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                {message.content}
-              </ReactMarkdown>
-            </div>
-            {message.role === "assistant" && (
-              <div className="pt-8">
-                <h5 className="font-light italic">References:</h5>
-                {message.sources?.map((source, i) => (
-                  <SourceCard
-                    key={i}
-                    filePath={source.filePath}
-                    chunkIndex={source.chunkIndex}
-                    content={source.content}
-                  />
-                ))}
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`rounded-xl mb-4 px-4 py-3 ${message.role === "user" ? "max-w-3xl ml-auto bg-[#212121]" : "w-full mr-auto"}`}
+              >
+                <div className="markdown">
+                  <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
+                {message.role === "assistant" && (
+                  <div className="pt-8">
+                    <h5 className="font-light italic">References:</h5>
+                    {message.sources?.map((source, i) => (
+                      <SourceCard
+                        key={i}
+                        filePath={source.filePath}
+                        chunkIndex={source.chunkIndex}
+                        content={source.content}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {loading && (
+              <div className="mb-4">
+                <RepoceryAnimation size={50} />
               </div>
             )}
+            <div ref={bottomRef} />
           </div>
-        ))}
-        {loading && (
-          <div className="mb-4">
-            <RepoceryAnimation size={50} />
+          <div
+            className={`w-full flex bg-[#1a1a1a] border border-neutral-800 pt-4 flex-col rounded-xl`}
+          >
+            <textarea
+              className={`w-full justify-center px-4 text-base text-neutral-200 bg-transparent focus:outline-none resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent`}
+              placeholder="Ask a question about the codebase..."
+              value={input}
+              rows={1}
+              ref={textareaRef}
+              style={{
+                height: "2.5rem",
+                minHeight: "2.5rem",
+                maxHeight: "20rem",
+              }}
+              onChange={(e) => {
+                setInput(e.target.value);
+                e.target.style.height = "auto";
+                const newHeight = Math.min(e.target.scrollHeight, 320);
+                e.target.style.height = newHeight + "px";
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit();
+                }
+              }}
+            />
+            <div className="flex justify-end">
+              <button
+                className={`my-4 rounded-lg mx-4 px-2 py-2 bg-[#008235] hover:bg-green-600 text-white text-sm`}
+                onClick={handleSubmit}
+              >
+                <ArrowRightIcon className="w-4 h-4" />
+              </button>
+            </div>
           </div>
-        )}
-        <div ref={bottomRef} />
-      </div>
-      <div
-        className={`w-full flex bg-[#1a1a1a] border border-neutral-800 ${messages.length === 0 && !isExpanded ? "py-2 rounded-full" : "pt-4 flex-col rounded-xl"}`}
-      >
-        <textarea
-          className={`w-full justify-center ${messages.length === 0 && !isExpanded && "py-2"} px-4 text-base text-neutral-200 bg-transparent focus:outline-none resize-none overflow-y-auto scrollbar-thin scrollbar-thumb-[#202020] scrollbar-track-transparent`}
-          placeholder="Ask a question about the codebase..."
-          value={input}
-          rows={1}
-          ref={textareaRef}
-          style={{ height: "2.5rem", minHeight: "2.5rem", maxHeight: "20rem" }}
-          onChange={(e) => {
-            setInput(e.target.value);
-            e.target.style.height = "auto";
-            const newHeight = Math.min(e.target.scrollHeight, 320);
-            e.target.style.height = newHeight + "px";
-            setIsExpanded(newHeight > 40); // 2.5rem = 40px
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSubmit();
-            }
-          }}
-        />
-        {((messages.length === 0 && input) || messages.length !== 0) && (
-          <div className="flex justify-end">
-            <button
-              className={`${messages.length === 0 && !isExpanded ? "my-1 rounded-full" : "my-4 rounded-lg"} mx-4 px-2 py-2 bg-[#008235] hover:bg-green-600 text-white text-sm`}
-              onClick={handleSubmit}
-            >
-              <ArrowRightIcon className="w-4 h-4" />
-            </button>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 }

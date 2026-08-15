@@ -47,9 +47,9 @@ export default function TypewriterAnimation({ phrases }: TypewriterProps) {
 
   return (
     <>
-      <span className="font-brains text-lg sm:text-3xl text-[#24CB71]">
+      <span className="font-brains text-lg sm:text-3xl text-[#008235]">
         {displayText}
-        <span id="Blink" className="font-brains text-neutral-400">
+        <span id="Blink" className="font-inter-200 text-neutral-400">
           |
         </span>
       </span>
